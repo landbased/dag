@@ -21,7 +21,7 @@ function lex(source) {
     let tokenList = [];
     while (i < source.length) {
         // whitespace
-        if (source[i] === ' ') {
+        if (source[i] === ' ' || source[i] === '\t') {
             increment();
             continue;
         }
@@ -37,20 +37,36 @@ function lex(source) {
             }
             continue;
         }
-        // special / operators
+        // specials
         {
             function isSpecial(c) {
                 return SPECIALS.includes(source[i]);
             }
-            function isOperator(c) {
-                return OPERATORS.includes(source[i]);
-            }
             const c = source[i];
-            if (isSpecial(c) || isOperator(c)) {
+            if (isSpecial(c)) {
                 let text = c;
                 tokenList.push({
                     kind: c,
                     value: null,
+                    text,
+                    line,
+                    posInLine,
+                });
+                increment();
+                continue;
+            }
+        }
+        // operators
+        {
+            function isOperator(c) {
+                return OPERATORS.includes(source[i]);
+            }
+            const c = source[i];
+            if (isOperator(c)) {
+                let text = c;
+                tokenList.push({
+                    kind: 'operator',
+                    value: c,
                     text,
                     line,
                     posInLine,
@@ -77,12 +93,12 @@ function lex(source) {
             continue;
         }
         // string
-        if (source[i] === '"') {
+        if (source[i] === '"' || source[i] === '\'') {
             const posAtStartOfToken = posInLine;
-            let text = '';
-            text += source[i];
+            const endToMatch = source[i];
+            let text = source[i];
             increment();
-            while (i < source.length && source[i] !== '"') {
+            while (i < source.length && source[i] !== endToMatch) {
                 text += source[i];
                 increment();
             }

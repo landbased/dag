@@ -1,6 +1,4 @@
+42 * (( .3 + 1.2) / 2)
 message = "hello world";
-integer = 42;
-float = 1.08;
-noLeadingDigit = .3;
-camel_case = "thing";
-2 * (4 - 1) / 0.3);
+  indended_with_camel_case_and_single_quote = 'heya';
+    _startWithUnderscoreAndFurtherIndentedWithMixed = "you'd thing a pirate's favourite letter would be 'r', but it be the 'c'";

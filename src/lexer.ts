@@ -42,7 +42,7 @@ export function lex(source: string): ReturnWithOkFlag {
 
   while (i < source.length) {
     // whitespace
-    if (source[i] === ' ') {
+    if (source[i] === ' ' || source[i] === '\t') {
       increment();
       continue;
     }
@@ -118,12 +118,12 @@ export function lex(source: string): ReturnWithOkFlag {
     }
 
     // string
-    if (source[i] === '"') {
+    if (source[i] === '"' || source[i] === '\'') {
       const posAtStartOfToken = posInLine;
-      let text = '';
-      text += source[i];
+      const endToMatch = source[i];
+      let text = source[i];
       increment();
-      while (i < source.length && source[i] !== '"') {
+      while (i < source.length && source[i] !== endToMatch) {
         text += source[i];
         increment();
       }
