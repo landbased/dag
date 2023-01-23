@@ -6,9 +6,9 @@ type Operator = typeof OPERATORS[number];
 const SPECIALS = [';', '=', 'symbol', '=', '(', ')', '{', '}', ','] as const;
 type Special = typeof SPECIALS[number];
 
-type DagType = 'string' | 'number' | 'function';
+type DagType = 'string' | 'number' | 'function' | 'operator';
 
-type TokenKind = Special | DagType | Operator;
+type TokenKind = Special | DagType;
 
 interface Token {
   kind: TokenKind;
@@ -59,20 +59,37 @@ export function lex(source: string): ReturnWithOkFlag {
       continue;
     }
   
-    // special / operators
+    // specials
     {
       function isSpecial(c: string): c is Special {
         return SPECIALS.includes(source[i] as Special);
       }
-      function isOperator(c: string): c is Operator {
-        return OPERATORS.includes(source[i] as Operator);
-      }
       const c = source[i];
-      if (isSpecial(c) || isOperator(c)) {
+      if (isSpecial(c)) {
         let text = c;
         tokenList.push({
           kind: c,
           value: null,
+          text,
+          line,
+          posInLine,
+        });
+        increment();
+        continue;
+      }
+    }
+
+    // operators
+    {
+      function isOperator(c: string): c is Operator {
+        return OPERATORS.includes(source[i] as Operator);
+      }
+      const c = source[i];
+      if (isOperator(c)) {
+        let text = c;
+        tokenList.push({
+          kind: 'operator',
+          value: c,
           text,
           line,
           posInLine,
