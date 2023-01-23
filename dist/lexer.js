@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lex = void 0;
-const OPERATORS = ['+', '-', '*', '/', '='];
-const SPECIALS = [';', '=', 'symbol'];
-const CHAR_REGEX = /[A-z]/;
+const OPERATORS = ['+', '-', '*', '/'];
+const SPECIALS = [';', '=', 'symbol', '=', '(', ')', '{', '}', ','];
+const CHAR_REGEX = /[A-z_]/;
 const NUM_REGEX = /[0-9]/;
 function lex(source) {
     let i = 0;
@@ -77,12 +77,12 @@ function lex(source) {
             continue;
         }
         // string
-        if (source[i] === '\'') {
+        if (source[i] === '"') {
             const posAtStartOfToken = posInLine;
             let text = '';
             text += source[i];
             increment();
-            while (i < source.length && source[i] !== '\'') {
+            while (i < source.length && source[i] !== '"') {
                 text += source[i];
                 increment();
             }

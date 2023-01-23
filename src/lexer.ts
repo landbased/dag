@@ -1,9 +1,9 @@
 import { ReturnWithOkFlag } from './utils';
 
-const OPERATORS = ['+',  '-', '*', '/', '='] as const;
+const OPERATORS = ['+',  '-', '*', '/'] as const;
 type Operator = typeof OPERATORS[number];
 
-const SPECIALS = [';', '=', 'symbol'] as const;
+const SPECIALS = [';', '=', 'symbol', '=', '(', ')', '{', '}', ','] as const;
 type Special = typeof SPECIALS[number];
 
 type DagType = 'string' | 'number' | 'function';
@@ -18,7 +18,7 @@ interface Token {
   posInLine: number;
 }
 
-const CHAR_REGEX = /[A-z]/;
+const CHAR_REGEX = /[A-z_]/;
 
 const NUM_REGEX = /[0-9]/;
 
@@ -101,12 +101,12 @@ export function lex(source: string): ReturnWithOkFlag {
     }
 
     // string
-    if (source[i] === '\'') {
+    if (source[i] === '"') {
       const posAtStartOfToken = posInLine;
       let text = '';
       text += source[i];
       increment();
-      while (i < source.length && source[i] !== '\'') {
+      while (i < source.length && source[i] !== '"') {
         text += source[i];
         increment();
       }

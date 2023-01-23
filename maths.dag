@@ -1,2 +1,6 @@
-message = 'hello world';
-number = .3.4;
+message = "hello world";
+integer = 42;
+float = 1.08;
+noLeadingDigit = .3;
+camel_case = "thing";
+2 * (4 - 1) / 0.3);

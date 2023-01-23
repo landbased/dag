@@ -11,8 +11,5 @@ function main() {
         return;
     }
     const [tokenList, lexOk] = (0, lexer_1.lex)(source);
-    if (!lexOk) {
-        return;
-    }
     console.log(tokenList);
 }
