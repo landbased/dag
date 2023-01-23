@@ -33,6 +33,7 @@ export function lex(source: string): ReturnWithOkFlag {
   }
 
   function newLine() {
+    i++;
     line++;
     posInLine = 1;
   }
@@ -47,8 +48,14 @@ export function lex(source: string): ReturnWithOkFlag {
     }
 
     // endline
-    if (source[i] === '\n') {
-      newLine();
+    if (source[i] === '\n' || source[i] === '\r') {
+      while(i < source.length && source[i] === '\n' || source[i] === '\r') {
+        if (source[i] === '\r') {
+          increment();
+        } else {
+          newLine();
+        }
+      }
       continue;
     }
   
@@ -77,8 +84,9 @@ export function lex(source: string): ReturnWithOkFlag {
 
     // symbol
     if (CHAR_REGEX.test(source[i])) {
+      const posAtStartOfToken = posInLine;
       let text = '';
-      while (CHAR_REGEX.test(source[i]) || NUM_REGEX.test(source[i])) {
+      while (i < source.length && CHAR_REGEX.test(source[i]) || NUM_REGEX.test(source[i])) {
         text += source[i];
         increment();
       }
@@ -87,36 +95,42 @@ export function lex(source: string): ReturnWithOkFlag {
         value: text,
         text,
         line,
-        posInLine,
+        posInLine: posAtStartOfToken,
       });
       continue;
     }
 
     // string
     if (source[i] === '\'') {
+      const posAtStartOfToken = posInLine;
       let text = '';
-      while (source[i] !== '\'') {
+      text += source[i];
+      increment();
+      while (i < source.length && source[i] !== '\'') {
         text += source[i];
         increment();
       }
+      text += source[i];
+      increment();
       tokenList.push({
         kind: 'string',
         value: text.slice(1,-1),
         text,
         line,
-        posInLine,
+        posInLine: posAtStartOfToken,
       });
       continue;
     }
 
     // number
     if (NUM_REGEX.test(source[i]) || source[i] === '.') {
+      const posAtStartOfToken = posInLine;
       let text = '';
       let encounteredDecimal = false;
-      while (NUM_REGEX.test(source[i]) || source[i] === '.') {
+      while (i < source.length && NUM_REGEX.test(source[i]) || source[i] === '.') {
         if (source[i] === '.') {
           if (encounteredDecimal) {
-            console.error(`Error parsing at ${line}:${posInLine} -- number had two decimal places`);
+            console.error(`lexing error@${line}:${posInLine}: number has two decimal places`);
             return [tokenList, false];
           }
           encounteredDecimal = true;
@@ -129,10 +143,14 @@ export function lex(source: string): ReturnWithOkFlag {
         value: Number(text),
         text,
         line,
-        posInLine,
+        posInLine: posAtStartOfToken,
       });
       continue;
     }
+
+    // UNHANDLED
+    console.error(`lexing error@${line}:${posInLine}: unhandled Token`);
+    return [tokenList, false];
   }
 
   return [tokenList, true];
