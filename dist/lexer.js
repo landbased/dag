@@ -139,7 +139,7 @@ function lex(source) {
             continue;
         }
         // UNHANDLED
-        console.error(`lexing error@${line}:${posInLine}: unhandled Token`);
+        console.error(`lexing error@${line}:${posInLine}: unhandled token`);
         return [tokenList, false];
     }
     return [tokenList, true];

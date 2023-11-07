@@ -1,16 +1,11 @@
 import { ReturnWithOkFlag } from './utils';
 
-const OPERATORS = ['+',  '-', '*', '/'] as const;
-type Operator = typeof OPERATORS[number];
+import { SPECIALS, OPERATORS} from './constants';
+import { type Special, type Operator, type DagType } from './types';
 
-const SPECIALS = [';', '=', 'symbol', '=', '(', ')', '{', '}', ','] as const;
-type Special = typeof SPECIALS[number];
+export type TokenKind = Special | DagType;
 
-type DagType = 'string' | 'number' | 'function' | 'operator';
-
-type TokenKind = Special | DagType;
-
-interface Token {
+export interface Token {
   kind: TokenKind;
   value: string | number | null;
   text: string;
@@ -22,7 +17,7 @@ const CHAR_REGEX = /[A-z_]/;
 
 const NUM_REGEX = /[0-9]/;
 
-export function lex(source: string): ReturnWithOkFlag {
+export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
   let i = 0;
   let line = 1;
   let posInLine = 1;
@@ -166,7 +161,7 @@ export function lex(source: string): ReturnWithOkFlag {
     }
 
     // UNHANDLED
-    console.error(`lexing error@${line}:${posInLine}: unhandled Token`);
+    console.error(`lexing error@${line}:${posInLine}: unhandled token`);
     return [tokenList, false];
   }
 
