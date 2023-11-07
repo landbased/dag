@@ -1,9 +1,8 @@
 import { ReturnWithOkFlag, isSpecial, isKeyword, isOperator } from './utils';
 
-import { SPECIALS, OPERATORS, KEYWORDS } from './constants';
-import { type Special, type Operator, type DagType } from './types';
+import { type Special, type DagType, type Keyword } from './types';
 
-export type TokenKind = Special | DagType | 'symbol' | 'keyword';
+export type TokenKind = Special | DagType | Keyword;
 
 export interface Token {
   kind: TokenKind;
@@ -96,7 +95,7 @@ export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
         text += source[i];
         increment();
       }
-      const kind = isKeyword(text) ? 'keyword' : 'symbol';
+      const kind = isKeyword(text) ? text : 'symbol';
 
       tokenList.push({
         kind,

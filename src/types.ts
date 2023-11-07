@@ -8,4 +8,4 @@ export type Keyword = typeof KEYWORDS[number];
 
 export type Instrinsic = keyof typeof INSTRINSICS;
 
-export type DagType = 'string' | 'number' | 'function' | 'operator';
+export type DagType = 'string' | 'number' | 'function' | 'operator' | 'symbol';
