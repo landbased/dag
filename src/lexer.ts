@@ -1,9 +1,9 @@
-import { ReturnWithOkFlag } from './utils';
+import { ReturnWithOkFlag, isSpecial, isKeyword, isOperator } from './utils';
 
-import { SPECIALS, OPERATORS} from './constants';
+import { SPECIALS, OPERATORS, KEYWORDS } from './constants';
 import { type Special, type Operator, type DagType } from './types';
 
-export type TokenKind = Special | DagType;
+export type TokenKind = Special | DagType | 'symbol' | 'keyword';
 
 export interface Token {
   kind: TokenKind;
@@ -56,9 +56,6 @@ export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
   
     // specials
     {
-      function isSpecial(c: string): c is Special {
-        return SPECIALS.includes(source[i] as Special);
-      }
       const c = source[i];
       if (isSpecial(c)) {
         let text = c;
@@ -76,9 +73,6 @@ export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
 
     // operators
     {
-      function isOperator(c: string): c is Operator {
-        return OPERATORS.includes(source[i] as Operator);
-      }
       const c = source[i];
       if (isOperator(c)) {
         let text = c;
@@ -94,7 +88,7 @@ export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
       }
     }
 
-    // symbol
+    // symbol or keyword
     if (CHAR_REGEX.test(source[i])) {
       const posAtStartOfToken = posInLine;
       let text = '';
@@ -102,8 +96,10 @@ export function lex(source: string): ReturnWithOkFlag<Array<Token>> {
         text += source[i];
         increment();
       }
+      const kind = isKeyword(text) ? 'keyword' : 'symbol';
+
       tokenList.push({
-        kind: 'symbol',
+        kind,
         value: text,
         text,
         line,

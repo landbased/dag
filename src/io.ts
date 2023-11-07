@@ -5,7 +5,7 @@ export function getFileNameFromCommandLine(): string {
   return process.argv[2];
 }
 
-export function readSource(filename: string): ReturnWithOkFlag {
+export function readSource(filename: string): ReturnWithOkFlag<string> {
   try {
   const raw = fs.readFileSync(filename,'utf8');
   return [raw, true];
